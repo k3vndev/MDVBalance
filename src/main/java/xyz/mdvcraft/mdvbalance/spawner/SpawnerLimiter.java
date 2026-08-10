@@ -73,7 +73,7 @@ public final class SpawnerLimiter implements Listener {
     public void onSpawnerSpawn(SpawnerSpawnEvent event) {
         if (!enabled()) return;
         CreatureSpawner spawner = event.getSpawner();
-        if (spawner == null) return; // Minecart spawner: fuera del alcance de v1.0.0.
+        if (spawner == null) return; // Minecart spawner: fuera del alcance de v1.0.1.
         if (plugin.getConfig().getBoolean("spawners.only-living-entities", true)
                 && !(event.getEntity() instanceof LivingEntity)) return;
 

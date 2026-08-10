@@ -1,4 +1,4 @@
-# MDVBalance 1.0.0
+# MDVBalance 1.0.1
 
 Plugin modular de MDVCRAFT para dos tareas iniciales:
 
@@ -7,7 +7,7 @@ Plugin modular de MDVCRAFT para dos tareas iniciales:
 
 Objetivo de plataforma: Paper/Purpur 1.21.6 + Java 21.
 
-## Tutorial 1.0.0
+## Tutorial 1.0.1
 
 Flujo fijo de cuatro objetivos, con textos/recordatorios configurables:
 
@@ -34,6 +34,28 @@ Cada objetivo tiene en `config.yml`:
 - `hide-player-chat`
 
 No se crea un scheduler por jugador. Hay un único task liviano que comprueba únicamente jugadores online con tutorial activo.
+
+### Sonidos de progreso
+
+MDVBalance 1.0.1 añade sonidos configurables al progreso del tutorial:
+
+```yaml
+tutorial:
+  sounds:
+    objective-complete:
+      enabled: true
+      sound: 'minecraft:block.note_block.pling'
+      volume: 1.0
+      pitch: 1.6
+
+    tutorial-complete:
+      enabled: true
+      sound: 'minecraft:ui.toast.challenge_complete'
+      volume: 1.0
+      pitch: 1.0
+```
+
+El sonido `objective-complete` se reproduce al completar los objetivos 1, 2 y 3. Al completar el objetivo 4 se usa solamente `tutorial-complete` para evitar superposición. Usa IDs internos/namespaced de sonido, por ejemplo `minecraft:block.note_block.pling`.
 
 ### Filtro opcional de chat
 
@@ -111,6 +133,6 @@ mvn -B -DskipTests clean package
 
 Salida:
 
-`target/MDVBalance-1.0.0.jar`
+`target/MDVBalance-1.0.1.jar`
 
 El repositorio incluye GitHub Actions para Java 21 y una verificación adicional con Java 25.

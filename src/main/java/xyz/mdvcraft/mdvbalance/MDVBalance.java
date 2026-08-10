@@ -47,7 +47,7 @@ public final class MDVBalance extends JavaPlugin {
         pluginCommand.setExecutor(command);
         pluginCommand.setTabCompleter(command);
 
-        getLogger().info("MDVBalance 1.0.0 habilitado. Tutorial=" + tutorialService.enabled()
+        getLogger().info("MDVBalance 1.0.1 habilitado. Tutorial=" + tutorialService.enabled()
                 + ", Spawners=" + spawnerLimiter.enabled()
                 + ", MaxPorSpawner=" + spawnerLimiter.maxAlive());
     }

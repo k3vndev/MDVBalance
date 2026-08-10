@@ -1,6 +1,6 @@
 name: MDVBalance
 main: xyz.mdvcraft.mdvbalance.MDVBalance
-version: 1.0.0
+version: 1.0.1
 api-version: '1.21'
 authors: [MDVCRAFT]
 description: Tutorial de nuevos jugadores y límite económico de spawners vanilla.

@@ -1,5 +1,5 @@
 # ==========================================================
-# MDVBalance 1.0.0
+# MDVBalance 1.0.1
 # Onboarding + balance de spawners para MDVCRAFT
 # ==========================================================
 
@@ -44,6 +44,25 @@ tutorial:
   chat-filter:
     enabled: true
     bypass-permission: 'mdvbalance.tutorial.chat-bypass'
+
+  # Sonidos del tutorial.
+  # Usa IDs internos/namespaced de sonido, por ejemplo:
+  # minecraft:block.note_block.pling
+  # El sonido de objetivo se reproduce al completar los pasos 1-3.
+  # Al terminar el paso 4 se reproduce únicamente tutorial-complete,
+  # evitando que dos sonidos se superpongan.
+  sounds:
+    objective-complete:
+      enabled: true
+      sound: 'minecraft:block.note_block.pling'
+      volume: 1.0
+      pitch: 1.6
+
+    tutorial-complete:
+      enabled: true
+      sound: 'minecraft:ui.toast.challenge_complete'
+      volume: 1.0
+      pitch: 1.0
 
   completion:
     bossbar-seconds: 3

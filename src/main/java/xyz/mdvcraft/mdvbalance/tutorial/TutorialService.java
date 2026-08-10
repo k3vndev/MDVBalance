@@ -289,6 +289,8 @@ public final class TutorialService {
             return;
         }
 
+        playConfiguredSound(player, "tutorial.sounds.objective-complete");
+
         TutorialProgress next = current.advance(player.getName(), now);
         storage.save(next);
         active.put(player.getUniqueId(), next);
@@ -304,6 +306,7 @@ public final class TutorialService {
 
         List<String> lines = plugin.getConfig().getStringList("tutorial.completion.message");
         sendLines(player, lines, current);
+        playConfiguredSound(player, "tutorial.sounds.tutorial-complete");
 
         BossBar bar = bossBars.computeIfAbsent(player.getUniqueId(), uuid -> createBossBar());
         if (bar != null) {
@@ -366,6 +369,21 @@ public final class TutorialService {
         lastReminder.put(player.getUniqueId(), now);
         List<String> lines = plugin.getConfig().getStringList(base + ".message");
         sendLines(player, lines, progress);
+    }
+
+    private void playConfiguredSound(Player player, String base) {
+        if (player == null || base == null || base.isBlank()) return;
+        if (!plugin.getConfig().getBoolean(base + ".enabled", true)) return;
+
+        String configured = plugin.getConfig().getString(base + ".sound", "minecraft:block.note_block.pling");
+        if (configured == null || configured.isBlank()) return;
+
+        float volume = (float) Math.max(0.0D, plugin.getConfig().getDouble(base + ".volume", 1.0D));
+        float pitch = (float) Math.max(0.0D, plugin.getConfig().getDouble(base + ".pitch", 1.0D));
+
+        String sound = configured.trim().toLowerCase(Locale.ROOT);
+        if (sound.indexOf(':') < 0) sound = "minecraft:" + sound;
+        player.playSound(player.getLocation(), sound, volume, pitch);
     }
 
     private void sendLines(Player player, List<String> lines, TutorialProgress progress) {
