@@ -20,8 +20,8 @@ jobs:
         run: mvn -B -DskipTests clean package
       - uses: actions/upload-artifact@v4
         with:
-          name: MDVBalance-1.0.0
-          path: target/MDVBalance-1.0.0.jar
+          name: MDVBalance-1.0.1
+          path: target/MDVBalance-1.0.1.jar
 
   verify-java-25:
     runs-on: ubuntu-latest
