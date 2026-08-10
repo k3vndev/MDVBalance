@@ -1,0 +1,146 @@
+# ==========================================================
+# MDVBalance 1.0.0
+# Onboarding + balance de spawners para MDVCRAFT
+# ==========================================================
+
+modules:
+  tutorial: true
+  spawners: true
+
+messages:
+  prefix: '&8[&6MDVBalance&8]&r '
+  no-permission: '&cNo tienes permiso.'
+  reloaded: '&aMDVBalance recargado correctamente.'
+  player-not-found: '&cNo se encontró a ese jugador conectado.'
+  console-only-signal: '&cEl comando tutorial signal solo puede ejecutarse desde consola.'
+  tutorial-started: '&aTutorial iniciado para &e{player}&a.'
+  tutorial-reset: '&aTutorial reiniciado para &e{player}&a.'
+  tutorial-skipped: '&eTutorial marcado como completado para &6{player}&e.'
+  tutorial-not-active: '&cEse jugador no tiene un tutorial activo.'
+  signal-accepted: '&aSeñal &e{signal} &aaceptada para &f{player}&a.'
+  signal-ignored: '&eSeñal ignorada: el jugador no está en el objetivo correspondiente.'
+
+# ==========================================================
+# TUTORIAL
+# ==========================================================
+
+tutorial:
+  enabled: true
+
+  # true = se inicia automáticamente únicamente en la primera entrada real del jugador.
+  # Los admins pueden iniciar/reiniciar el tutorial de cualquiera mediante comandos.
+  only-new-players: true
+
+  # Un único chequeo liviano para todos los jugadores con tutorial activo.
+  # 20 ticks = 1 segundo.
+  state-check-interval-ticks: 20
+
+  bossbar:
+    enabled: true
+    color: YELLOW
+    style: SOLID
+    format: '&6&l✦ {objective} &7({step}/{total})'
+
+  chat-filter:
+    enabled: true
+    bypass-permission: 'mdvbalance.tutorial.chat-bypass'
+
+  completion:
+    bossbar-seconds: 3
+    message:
+      - ''
+      - '&6&l✦ TUTORIAL COMPLETADO ✦'
+      - '&fYa estás preparado para comenzar tu aventura.'
+      - '&7¡Bienvenido a MDVCRAFT!'
+      - ''
+
+  objectives:
+    race:
+      title: 'Elige tu raza'
+      hide-player-chat: true
+      luckperms-group: 'aventurero'
+      permission-fallback: 'group.aventurero'
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fElige tu raza'
+        - '&7Abre el &6Libro del Aventurero &7y selecciona tu raza.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 30
+        message:
+          - '&e➤ Abre el Libro del Aventurero y elige una raza.'
+
+    supplies:
+      title: 'Reclama tus suministros'
+      hide-player-chat: true
+      signal: 'suministros'
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fReclama tus suministros'
+        - '&7Abre &6Suministros &7desde el menú y reclama tu kit inicial.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 30
+        message:
+          - '&e➤ Abre Suministros y reclama tu kit inicial.'
+
+    survival:
+      title: 'Viaja al Survival'
+      hide-player-chat: false
+      world: 'world'
+      allowed-sources:
+        - COMMAND
+        - SIGN
+        - PORTAL
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fViaja al Survival'
+        - '&7Usa el portal, un cartel de viaje o &e/rtp&7.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 45
+        message:
+          - '&e➤ Viaja al Survival mediante un viaje aleatorio.'
+
+    home:
+      title: 'Establece tu hogar'
+      hide-player-chat: false
+      minimum-homes: 1
+      essentials-userdata-path: 'plugins/Essentials/userdata'
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fEstablece tu hogar'
+        - '&7Usa el sistema de Hogares de MDVSocial o &e/sethome&7.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 45
+        message:
+          - '&e➤ Establece tu primer hogar para terminar el tutorial.'
+
+# ==========================================================
+# SPAWNERS VANILLA
+# ==========================================================
+
+spawners:
+  enabled: true
+
+  # Máximo de entidades vivas originadas por UN MISMO spawner.
+  # Sigue contando aunque los mobs se alejen a otros chunks mientras existan.
+  max-alive-per-spawner: 3
+
+  # Solo afecta CreatureSpawner (spawner vanilla de bloque).
+  # Minecart spawners y Trial Spawners quedan fuera.
+  only-living-entities: true
+
+  # Marca cada entidad con PDC para reconstruir el tracker cuando su chunk carga.
+  persistent-origin-tag: true
+
+  debug: false

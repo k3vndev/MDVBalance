@@ -1,0 +1,24 @@
+name: MDVBalance
+main: xyz.mdvcraft.mdvbalance.MDVBalance
+version: 1.0.0
+api-version: '1.21'
+authors: [MDVCRAFT]
+description: Tutorial de nuevos jugadores y límite económico de spawners vanilla.
+softdepend: [LuckPerms, Essentials, MDVSocial, MDVRTP, PlayerKits2]
+
+commands:
+  mdvbalance:
+    description: Administración de MDVBalance.
+    usage: /mdvbalance help
+    aliases: [mdvb]
+
+permissions:
+  mdvbalance.admin:
+    description: Administración general de MDVBalance.
+    default: op
+  mdvbalance.tutorial.admin:
+    description: Permite administrar tutoriales.
+    default: op
+  mdvbalance.tutorial.chat-bypass:
+    description: Sus mensajes de chat siguen visibles para jugadores cuyo tutorial oculta chat normal.
+    default: op
