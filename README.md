@@ -1,11 +1,43 @@
-# MDVBalance 1.0.1
+# MDVBalance 1.1.0
 
-Plugin modular de MDVCRAFT para dos tareas iniciales:
+Plugin modular de MDVCRAFT para balance y control global del servidor:
 
 1. Tutorial/onboarding de nuevos jugadores.
 2. Límite económico de mobs generados por spawners vanilla.
+3. MOTD/lista de servidores con modo de mantenimiento automático por whitelist.
 
 Objetivo de plataforma: Paper/Purpur 1.21.6 + Java 21.
+
+
+## Lista de servidores / mantenimiento 1.1.0
+
+MDVBalance puede manejar directamente el ping de Paper/Purpur, por lo que para el uso actual de MDVCRAFT **ServerListPlus deja de ser necesario**.
+
+Funciones:
+
+- MOTD normal configurable.
+- Perfil de mantenimiento automático cuando la whitelist está activa.
+- Tooltip personalizado al pasar el mouse sobre la cantidad de jugadores.
+- Texto de versión opcional.
+- Placeholders `{online}`, `{players}`, `{max}`, `{minecraft_version}` y `{whitelist}`.
+- Opción `normal.motd.use-server-properties: true` para seguir usando el MOTD de `server.properties`/PebbleHost en estado normal.
+
+Paper expone la muestra de jugadores del ping; MDVBalance la reemplaza por líneas configurables cuando `hover.replace-player-list: true`.
+
+Comando de diagnóstico:
+
+```text
+/mdvbalance serverlist
+```
+
+Con la configuración por defecto:
+
+```text
+/whitelist on  -> perfil maintenance
+/whitelist off -> perfil normal
+```
+
+El estado de whitelist se cachea desde el hilo principal cada 20 ticks por defecto, evitando consultar el servidor desde el ping asíncrono.
 
 ## Tutorial 1.0.1
 
@@ -69,6 +101,7 @@ Si el objetivo tiene `hide-player-chat: true`, el novato no recibe el chat escri
 - `/mdvbalance tutorial skip <jugador>`
 - `/mdvbalance tutorial status <jugador>`
 - `/mdvbalance spawners`
+- `/mdvbalance serverlist`
 
 El comando interno de integración con kits es:
 
@@ -133,6 +166,6 @@ mvn -B -DskipTests clean package
 
 Salida:
 
-`target/MDVBalance-1.0.1.jar`
+`target/MDVBalance-1.1.0.jar`
 
 El repositorio incluye GitHub Actions para Java 21 y una verificación adicional con Java 25.

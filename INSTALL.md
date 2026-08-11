@@ -1,11 +1,12 @@
-# Instalación rápida — MDVBalance 1.0.1
+# Instalación rápida — MDVBalance 1.1.0
 
 1. Compila el proyecto con Maven o GitHub Actions.
-2. Copia `MDVBalance-1.0.1.jar` a `plugins/`.
+2. Copia `MDVBalance-1.1.0.jar` a `plugins/`.
 3. Mantén instalados LuckPerms, EssentialsX, MDVSocial, MDVRTP y PlayerKits2.
 4. Inicia el servidor una vez para generar `plugins/MDVBalance/config.yml` y `tutorial.db`.
 5. Configura la acción de claim del kit Suministros siguiendo `PLAYERKITS2_SETUP.md`.
-6. Reinicia el servidor.
+6. Si vas a usar el nuevo módulo `server-list`, elimina ServerListPlus para evitar conflictos de MOTD.
+7. Reinicia el servidor.
 
 ## Prueba recomendada con tu cuenta
 
@@ -28,3 +29,21 @@ Deja `max-alive-per-spawner: 3`, acércate a un spawner y confirma que nunca man
 ## Actualizar desde 1.0.0 a 1.0.1
 
 No borres `plugins/MDVBalance/config.yml` ni `tutorial.db`. Reemplaza el JAR con el servidor apagado y añade manualmente la nueva sección `tutorial.sounds` si quieres verla/configurarla. Si no existe, el plugin usa los mismos valores por defecto incluidos en 1.0.1.
+
+
+## Prueba de lista de servidores
+
+```text
+/mdvbalance serverlist
+/whitelist on
+```
+
+Actualiza la lista multijugador y confirma que aparece el MOTD de mantenimiento y el hover configurado. Luego:
+
+```text
+/whitelist off
+```
+
+Debe regresar al MOTD normal.
+
+Si quieres editar el MOTD normal desde PebbleHost, activa `server-list.normal.motd.use-server-properties: true`.

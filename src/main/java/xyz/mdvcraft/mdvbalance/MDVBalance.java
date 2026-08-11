@@ -5,6 +5,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.mdvcraft.mdvbalance.command.MDVBalanceCommand;
 import xyz.mdvcraft.mdvbalance.spawner.SpawnerLimiter;
+import xyz.mdvcraft.mdvbalance.serverlist.ServerListService;
 import xyz.mdvcraft.mdvbalance.tutorial.TutorialListener;
 import xyz.mdvcraft.mdvbalance.tutorial.TutorialService;
 import xyz.mdvcraft.mdvbalance.tutorial.TutorialStorage;
@@ -16,6 +17,7 @@ public final class MDVBalance extends JavaPlugin {
     private TutorialStorage tutorialStorage;
     private TutorialService tutorialService;
     private SpawnerLimiter spawnerLimiter;
+    private ServerListService serverListService;
 
     @Override
     public void onEnable() {
@@ -32,9 +34,11 @@ public final class MDVBalance extends JavaPlugin {
 
         tutorialService = new TutorialService(this, tutorialStorage);
         spawnerLimiter = new SpawnerLimiter(this);
+        serverListService = new ServerListService(this);
 
         tutorialService.enable();
         spawnerLimiter.enable();
+        serverListService.enable();
 
         getServer().getPluginManager().registerEvents(new TutorialListener(this, tutorialService), this);
         getServer().getPluginManager().registerEvents(spawnerLimiter, this);
@@ -47,8 +51,9 @@ public final class MDVBalance extends JavaPlugin {
         pluginCommand.setExecutor(command);
         pluginCommand.setTabCompleter(command);
 
-        getLogger().info("MDVBalance 1.0.1 habilitado. Tutorial=" + tutorialService.enabled()
+        getLogger().info("MDVBalance 1.1.0 habilitado. Tutorial=" + tutorialService.enabled()
                 + ", Spawners=" + spawnerLimiter.enabled()
+                + ", ServerList=" + serverListService.enabled()
                 + ", MaxPorSpawner=" + spawnerLimiter.maxAlive());
     }
 
@@ -56,6 +61,7 @@ public final class MDVBalance extends JavaPlugin {
     public void onDisable() {
         if (tutorialService != null) tutorialService.shutdown();
         if (spawnerLimiter != null) spawnerLimiter.shutdown();
+        if (serverListService != null) serverListService.shutdown();
         if (tutorialStorage != null) tutorialStorage.close();
         getLogger().info("MDVBalance deshabilitado.");
     }
@@ -64,6 +70,7 @@ public final class MDVBalance extends JavaPlugin {
         reloadConfig();
         if (tutorialService != null) tutorialService.reload();
         if (spawnerLimiter != null) spawnerLimiter.reload();
+        if (serverListService != null) serverListService.reload();
     }
 
     public void message(CommandSender sender, String key, String... replacements) {
@@ -89,5 +96,9 @@ public final class MDVBalance extends JavaPlugin {
 
     public SpawnerLimiter spawners() {
         return spawnerLimiter;
+    }
+
+    public ServerListService serverList() {
+        return serverListService;
     }
 }

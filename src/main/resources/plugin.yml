@@ -1,9 +1,9 @@
 name: MDVBalance
 main: xyz.mdvcraft.mdvbalance.MDVBalance
-version: 1.0.1
+version: 1.1.0
 api-version: '1.21'
 authors: [MDVCRAFT]
-description: Tutorial de nuevos jugadores y límite económico de spawners vanilla.
+description: Onboarding, balance global y control de la lista de servidores para MDVCRAFT.
 softdepend: [LuckPerms, Essentials, MDVSocial, MDVRTP, PlayerKits2]
 
 commands:

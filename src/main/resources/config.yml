@@ -1,11 +1,12 @@
 # ==========================================================
-# MDVBalance 1.0.1
-# Onboarding + balance de spawners para MDVCRAFT
+# MDVBalance 1.1.0
+# Onboarding + balance de spawners + lista de servidores para MDVCRAFT
 # ==========================================================
 
 modules:
   tutorial: true
   spawners: true
+  server-list: true
 
 messages:
   prefix: '&8[&6MDVBalance&8]&r '
@@ -19,6 +20,79 @@ messages:
   tutorial-not-active: '&cEse jugador no tiene un tutorial activo.'
   signal-accepted: '&aSeñal &e{signal} &aaceptada para &f{player}&a.'
   signal-ignored: '&eSeñal ignorada: el jugador no está en el objetivo correspondiente.'
+
+
+# ==========================================================
+# LISTA DE SERVIDORES / MOTD
+# ==========================================================
+# Este módulo reemplaza a ServerListPlus para las funciones usadas por MDVCRAFT.
+# Trabaja directamente con el ping de Paper/Purpur; no necesita ProtocolLib.
+#
+# Cuando whitelist está OFF -> usa el perfil "normal".
+# Cuando whitelist está ON  -> usa el perfil "maintenance" automáticamente.
+#
+# Placeholders disponibles dentro de este módulo:
+#   {online} / {players}   jugadores online
+#   {max}                  máximo mostrado por el servidor
+#   {minecraft_version}    versión de Minecraft del servidor
+#   {whitelist}            true/false
+# ==========================================================
+
+server-list:
+  enabled: true
+
+  normal:
+    motd:
+      # true = NO reemplaza el MOTD normal y deja que server.properties lo controle.
+      # Esto permite seguir usando el MOTD Editor de PebbleHost si lo prefieres.
+      # false = usa las líneas configuradas aquí (recomendado para dejar todo en MDVBalance).
+      use-server-properties: false
+      lines:
+        - '&2         ≫≫ &e【&4⚒☠ &6&lMDVCRAFT &c[1.21.6+] &4☠⚒&e】 &2≪≪'
+        - '&e      Survival RPG &7• &aMobs &7• &bÍtems custom &7• &6Clanes'
+
+    # Texto mostrado al pasar el mouse sobre la cantidad de jugadores.
+    hover:
+      enabled: true
+      # true = reemplaza los nombres reales por estas líneas personalizadas.
+      # false = agrega estas líneas además de la muestra de jugadores que Paper ya tenga.
+      replace-player-list: true
+      lines:
+        - '&6&lMDVCRAFT &7• &fSurvival RPG'
+        - '&7Jugadores conectados: &e{online}&7/&e{max}'
+        - '&aMobs únicos &7• &bÍtems custom &7• &6Clanes'
+        - '&7Versión: &f{minecraft_version}+'
+
+    # Paper permite cambiar el texto de versión enviado en el ping.
+    # Se deja apagado porque Minecraft normalmente solo lo destaca cuando hay incompatibilidad.
+    version:
+      enabled: false
+      text: '&a{minecraft_version}+'
+
+  maintenance:
+    # Consulta la whitelist una vez por segundo en el hilo principal y cachea el estado.
+    # Así el ping (que puede ser asíncrono) no necesita consultar estado inseguro del servidor.
+    detect-whitelist: true
+    whitelist-check-interval-ticks: 20
+
+    motd:
+      use-server-properties: false
+      lines:
+        - '&4         ≫≫ &e【&c⚒☠ &6&lMDVCRAFT &c☠⚒&e】 &4≪≪'
+        - '&c        ⚠ &lSERVIDOR EN MANTENIMIENTO &r&c⚠'
+
+    hover:
+      enabled: true
+      replace-player-list: true
+      lines:
+        - '&c&l⚠ MDVCRAFT EN MANTENIMIENTO'
+        - '&7Estamos realizando mejoras en el servidor.'
+        - '&eVuelve a intentarlo en unos minutos.'
+        - '&7Whitelist: &f{whitelist}'
+
+    version:
+      enabled: false
+      text: '&cMANTENIMIENTO'
 
 # ==========================================================
 # TUTORIAL

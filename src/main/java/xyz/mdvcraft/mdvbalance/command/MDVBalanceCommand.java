@@ -59,6 +59,15 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
+        if (args[0].equalsIgnoreCase("serverlist")) {
+            String mode = plugin.serverList().maintenanceActive() ? "&cMANTENIMIENTO" : "&aNORMAL";
+            sender.sendMessage(ColorUtil.color("&6MDVBalance &7• ServerList: &e"
+                    + (plugin.serverList().enabled() ? "activo" : "desactivado")
+                    + " &7• Modo: " + mode
+                    + " &7• Whitelist detectada: &e" + plugin.serverList().whitelistDetected()));
+            return true;
+        }
+
         sendHelp(sender);
         return true;
     }
@@ -146,12 +155,13 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
         sender.sendMessage(ColorUtil.color("&e/mdvbalance tutorial skip <jugador>"));
         sender.sendMessage(ColorUtil.color("&e/mdvbalance tutorial status <jugador>"));
         sender.sendMessage(ColorUtil.color("&e/mdvbalance spawners &7- estadísticas del tracker"));
+        sender.sendMessage(ColorUtil.color("&e/mdvbalance serverlist &7- estado del MOTD/mantenimiento"));
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
                                                  @NotNull String alias, @NotNull String[] args) {
-        if (args.length == 1) return match(args[0], List.of("help", "reload", "tutorial", "spawners"));
+        if (args.length == 1) return match(args[0], List.of("help", "reload", "tutorial", "spawners", "serverlist"));
         if (args.length == 2 && args[0].equalsIgnoreCase("tutorial")) {
             return match(args[1], List.of("start", "reset", "skip", "status"));
         }
