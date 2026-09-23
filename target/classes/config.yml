@@ -149,6 +149,7 @@ tutorial:
 
   objectives:
     race:
+      enabled: true
       title: 'Elige tu raza'
       hide-player-chat: true
       luckperms-group: 'aventurero'
@@ -166,6 +167,7 @@ tutorial:
           - '&e➤ Abre el Libro del Aventurero y elige una raza.'
 
     supplies:
+      enabled: true
       title: 'Reclama tus suministros'
       hide-player-chat: true
       signal: 'suministros'
@@ -182,6 +184,7 @@ tutorial:
           - '&e➤ Abre Suministros y reclama tu kit inicial.'
 
     survival:
+      enabled: true
       title: 'Viaja al Survival'
       hide-player-chat: false
       world: 'world'
@@ -202,6 +205,7 @@ tutorial:
           - '&e➤ Viaja al Survival mediante un viaje aleatorio.'
 
     home:
+      enabled: false
       title: 'Establece tu hogar'
       hide-player-chat: false
       minimum-homes: 1

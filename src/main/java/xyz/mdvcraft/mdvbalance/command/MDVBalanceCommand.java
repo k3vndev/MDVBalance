@@ -28,7 +28,7 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
-                             @NotNull String label, @NotNull String[] args) {
+            @NotNull String label, @NotNull String[] args) {
         if (args.length >= 2 && args[0].equalsIgnoreCase("tutorial") && args[1].equalsIgnoreCase("signal")) {
             return handleSignal(sender, args);
         }
@@ -49,7 +49,8 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args[0].equalsIgnoreCase("tutorial")) return handleTutorialAdmin(sender, args);
+        if (args[0].equalsIgnoreCase("tutorial"))
+            return handleTutorialAdmin(sender, args);
 
         if (args[0].equalsIgnoreCase("spawners")) {
             sender.sendMessage(ColorUtil.color("&6MDVBalance &7• Spawners trackeados: &e"
@@ -133,7 +134,8 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
     private void sendStatus(CommandSender sender, Player player) {
         Optional<TutorialProgress> optional = plugin.tutorials().getProgress(player);
         if (optional.isEmpty()) {
-            sender.sendMessage(ColorUtil.color("&6MDVBalance &7• &f" + player.getName() + " &7no tiene registro de tutorial."));
+            sender.sendMessage(
+                    ColorUtil.color("&6MDVBalance &7• &f" + player.getName() + " &7no tiene registro de tutorial."));
             return;
         }
         TutorialProgress progress = optional.get();
@@ -144,7 +146,8 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
         TutorialStep step = progress.currentStep();
         sender.sendMessage(ColorUtil.color("&6MDVBalance &7• &f" + player.getName()
                 + " &7está en &e" + (step == null ? "?" : step.configKey())
-                + " &7(&e" + progress.step() + "/" + TutorialStep.TOTAL + "&7)"));
+                + " &7(&e" + plugin.tutorials().displayStep(progress) + "/"
+                + plugin.tutorials().totalEnabledSteps() + "&7)"));
     }
 
     private void sendHelp(CommandSender sender) {
@@ -160,8 +163,9 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
-                                                 @NotNull String alias, @NotNull String[] args) {
-        if (args.length == 1) return match(args[0], List.of("help", "reload", "tutorial", "spawners", "serverlist"));
+            @NotNull String alias, @NotNull String[] args) {
+        if (args.length == 1)
+            return match(args[0], List.of("help", "reload", "tutorial", "spawners", "serverlist"));
         if (args.length == 2 && args[0].equalsIgnoreCase("tutorial")) {
             return match(args[1], List.of("start", "reset", "skip", "status"));
         }
@@ -175,7 +179,9 @@ public final class MDVBalanceCommand implements CommandExecutor, TabCompleter {
     private List<String> match(String input, List<String> values) {
         String lower = input == null ? "" : input.toLowerCase(Locale.ROOT);
         List<String> out = new ArrayList<>();
-        for (String value : values) if (value.toLowerCase(Locale.ROOT).startsWith(lower)) out.add(value);
+        for (String value : values)
+            if (value.toLowerCase(Locale.ROOT).startsWith(lower))
+                out.add(value);
         return out;
     }
 }

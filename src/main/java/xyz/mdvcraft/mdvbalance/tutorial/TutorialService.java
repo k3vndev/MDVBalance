@@ -65,8 +65,19 @@ public final class TutorialService {
                     bypassPermission != null && !bypassPermission.isBlank() && player.hasPermission(bypassPermission));
 
             TutorialProgress progress = active.get(player.getUniqueId());
-            if (progress != null && !progress.completed())
-                showObjective(player, progress, false);
+            if (progress != null && !progress.completed()) {
+                TutorialProgress normalized = normalizeProgress(player, progress);
+                if (normalized.completed()) {
+                    storage.save(normalized);
+                    active.remove(player.getUniqueId());
+                    removeBossBar(player.getUniqueId());
+                    chatHidden.remove(player.getUniqueId());
+                    lastReminder.remove(player.getUniqueId());
+                } else {
+                    active.put(player.getUniqueId(), normalized);
+                    showObjective(player, normalized, false);
+                }
+            }
         }
     }
 
@@ -112,8 +123,10 @@ public final class TutorialService {
                 bypassPermission != null && !bypassPermission.isBlank() && player.hasPermission(bypassPermission));
         Optional<TutorialProgress> stored = storage.load(player.getUniqueId());
         if (stored.isPresent()) {
-            TutorialProgress progress = stored.get();
-            if (!progress.completed() && progress.currentStep() != null) {
+            TutorialProgress progress = normalizeProgress(player, stored.get());
+            if (progress.completed()) {
+                storage.save(progress);
+            } else if (progress.currentStep() != null) {
                 active.put(player.getUniqueId(), progress);
                 showObjective(player, progress, false);
             }
@@ -142,8 +155,19 @@ public final class TutorialService {
         if (player == null || !enabled())
             return;
         long now = System.currentTimeMillis();
+        TutorialStep firstStep = firstEnabledStep();
+        if (firstStep == null) {
+            TutorialProgress completed = new TutorialProgress(
+                    player.getUniqueId(), player.getName(), TutorialStep.TOTAL + 1, true, now, now, now);
+            storage.save(completed);
+            active.remove(player.getUniqueId());
+            removeBossBar(player.getUniqueId());
+            chatHidden.remove(player.getUniqueId());
+            lastReminder.remove(player.getUniqueId());
+            return;
+        }
         TutorialProgress progress = new TutorialProgress(
-                player.getUniqueId(), player.getName(), 1, false, now, now, now);
+                player.getUniqueId(), player.getName(), firstStep.number(), false, now, now, now);
         storage.save(progress);
         active.put(player.getUniqueId(), progress);
         showObjective(player, progress, sendStartMessage);
@@ -183,7 +207,25 @@ public final class TutorialService {
         TutorialProgress cached = active.get(player.getUniqueId());
         if (cached != null)
             return Optional.of(cached);
-        return storage.load(player.getUniqueId());
+        Optional<TutorialProgress> stored = storage.load(player.getUniqueId());
+        if (stored.isEmpty())
+            return stored;
+        TutorialProgress normalized = normalizeProgress(player, stored.get());
+        if (!normalized.equals(stored.get()))
+            storage.save(normalized);
+        return Optional.of(normalized);
+    }
+
+    public int totalEnabledSteps() {
+        return enabledSteps().size();
+    }
+
+    public int displayStep(TutorialProgress progress) {
+        if (progress == null || progress.currentStep() == null)
+            return totalEnabledSteps();
+        List<TutorialStep> steps = enabledSteps();
+        int position = steps.indexOf(progress.currentStep());
+        return position < 0 ? 0 : position + 1;
     }
 
     public boolean isChatHidden(UUID uuid) {
@@ -328,17 +370,20 @@ public final class TutorialService {
             return;
 
         long now = System.currentTimeMillis();
-        if (current.step() >= TutorialStep.TOTAL) {
+        TutorialStep next = nextEnabledStep(expected);
+        if (next == null) {
             complete(player, current, now);
             return;
         }
 
         playConfiguredSound(player, "tutorial.sounds.objective-complete");
 
-        TutorialProgress next = current.advance(player.getName(), now);
-        storage.save(next);
-        active.put(player.getUniqueId(), next);
-        showObjective(player, next, true);
+        TutorialProgress nextProgress = new TutorialProgress(
+                current.uuid(), player.getName(), next.number(), false,
+                current.startedAt(), now, now);
+        storage.save(nextProgress);
+        active.put(player.getUniqueId(), nextProgress);
+        showObjective(player, nextProgress, true);
     }
 
     private void complete(Player player, TutorialProgress current, long now) {
@@ -382,7 +427,9 @@ public final class TutorialService {
                 String format = plugin.getConfig().getString("tutorial.bossbar.format",
                         "&6&l✦ {objective} &7({step}/{total})");
                 bar.setTitle(ColorUtil.color(formatText(format, player, progress, title)));
-                bar.setProgress(Math.max(0D, Math.min(1D, progress.step() / (double) TutorialStep.TOTAL)));
+                int total = totalEnabledSteps();
+                bar.setProgress(total == 0 ? 1D
+                        : Math.max(0D, Math.min(1D, displayStep(progress) / (double) total)));
                 if (!bar.getPlayers().contains(player))
                     bar.addPlayer(player);
                 bar.setVisible(true);
@@ -458,12 +505,65 @@ public final class TutorialService {
     private String formatText(String text, Player player, TutorialProgress progress, String objective) {
         if (text == null)
             return "";
-        int step = progress == null ? TutorialStep.TOTAL : Math.min(progress.step(), TutorialStep.TOTAL);
+        int total = totalEnabledSteps();
+        int step = progress == null ? total : displayStep(progress);
         return text
                 .replace("{player}", player == null ? "" : player.getName())
                 .replace("{objective}", objective == null ? "" : objective)
                 .replace("{step}", String.valueOf(step))
-                .replace("{total}", String.valueOf(TutorialStep.TOTAL));
+                .replace("{total}", String.valueOf(total));
+    }
+
+    private List<TutorialStep> enabledSteps() {
+        List<TutorialStep> steps = new ArrayList<>();
+        for (TutorialStep step : TutorialStep.values()) {
+            if (plugin.getConfig().getBoolean("tutorial.objectives." + step.configKey() + ".enabled", true))
+                steps.add(step);
+        }
+        return steps;
+    }
+
+    private TutorialStep firstEnabledStep() {
+        List<TutorialStep> steps = enabledSteps();
+        return steps.isEmpty() ? null : steps.get(0);
+    }
+
+    private TutorialStep nextEnabledStep(TutorialStep current) {
+        boolean found = false;
+        for (TutorialStep step : TutorialStep.values()) {
+            if (found && plugin.getConfig().getBoolean(
+                    "tutorial.objectives." + step.configKey() + ".enabled", true))
+                return step;
+            if (step == current)
+                found = true;
+        }
+        return null;
+    }
+
+    private TutorialProgress normalizeProgress(Player player, TutorialProgress progress) {
+        if (progress.completed())
+            return progress;
+        TutorialStep current = progress.currentStep();
+        if (current != null && plugin.getConfig().getBoolean(
+                "tutorial.objectives." + current.configKey() + ".enabled", true))
+            return progress;
+
+        TutorialStep next = current == null ? firstEnabledStep() : nextEnabledStepBeforeOrAt(current);
+        if (next == null)
+            return progress.complete(player.getName(), System.currentTimeMillis());
+        long now = System.currentTimeMillis();
+        return new TutorialProgress(progress.uuid(), player.getName(), next.number(), false,
+                progress.startedAt(), now, now);
+    }
+
+    private TutorialStep nextEnabledStepBeforeOrAt(TutorialStep current) {
+        for (TutorialStep step : TutorialStep.values()) {
+            if (step.number() < current.number())
+                continue;
+            if (plugin.getConfig().getBoolean("tutorial.objectives." + step.configKey() + ".enabled", true))
+                return step;
+        }
+        return null;
     }
 
     private void removeBossBar(UUID uuid) {
