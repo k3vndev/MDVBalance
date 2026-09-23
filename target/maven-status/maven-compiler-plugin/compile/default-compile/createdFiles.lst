@@ -10,6 +10,7 @@ xyz\mdvcraft\mdvbalance\tutorial\TutorialProgress.class
 xyz\mdvcraft\mdvbalance\tutorial\TutorialStorage.class
 xyz\mdvcraft\mdvbalance\tutorial\integration\MDVRTPHook$1.class
 xyz\mdvcraft\mdvbalance\tutorial\integration\MDVRTPHook.class
+xyz\mdvcraft\mdvbalance\listener\DeathListener.class
 xyz\mdvcraft\mdvbalance\tutorial\TutorialListener.class
 xyz\mdvcraft\mdvbalance\command\MDVBalanceCommand.class
 xyz\mdvcraft\mdvbalance\tutorial\TutorialService$1.class

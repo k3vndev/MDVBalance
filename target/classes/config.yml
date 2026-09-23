@@ -115,6 +115,11 @@ tutorial:
     style: SOLID
     format: '&6&l✦ {objective} &7({step}/{total})'
 
+  # Repite el mismo mensaje de la bossbar en la actionbar cada tick,
+  # para sobreescribir la actionbar de otros plugins mientras dure el tutorial.
+  actionbar:
+    enabled: true
+
   chat-filter:
     enabled: true
     bypass-permission: 'mdvbalance.tutorial.chat-bypass'
@@ -241,3 +246,25 @@ spawners:
   persistent-origin-tag: true
 
   debug: false
+
+
+# ==========================================================
+# DEATH LISTENER
+# ==========================================================
+#
+# Configuración del listener de muertes de jugadores.
+# Da consejos a los jugadores las primeras veces que mueren.
+
+death-listener:
+  enabled: true
+  # Número máximo de muertes permitidas antes de que ocurra alguna acción.
+  # Normalmente, los jugadores solo reciben un mensaje la primera vez que mueren.
+  max-deaths: 1
+
+  # Mensaje que se muestra al jugador al respawnear si su contador de muertes es menor o igual a max-deaths.
+  message: |
+    &e&l➤ &r&6Has caído por primera vez.
+     
+    &6Usa la &5Fruta de la Muerte &6para teletransportarte a la bolsa con tus ítems.
+    &6Recuerda que puedes usar el &aLibro del Aventurero &6para establecer tu hogar y regresar a él fácilmente.
+

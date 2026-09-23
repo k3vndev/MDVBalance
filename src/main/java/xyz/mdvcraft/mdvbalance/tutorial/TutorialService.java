@@ -38,6 +38,7 @@ public final class TutorialService {
 
     private MDVRTPHook mdvrtpHook;
     private BukkitTask stateTask;
+    private BukkitTask actionBarTask;
 
     public TutorialService(MDVBalance plugin, TutorialStorage storage) {
         this.plugin = plugin;
@@ -84,16 +85,25 @@ public final class TutorialService {
     private void restartTask() {
         if (stateTask != null)
             stateTask.cancel();
+        if (actionBarTask != null)
+            actionBarTask.cancel();
         if (!enabled())
             return;
         long interval = Math.max(10L, plugin.getConfig().getLong("tutorial.state-check-interval-ticks", 20L));
         stateTask = Bukkit.getScheduler().runTaskTimer(plugin, this::tick, interval, interval);
+        // Cada tick para sobreescribir la actionbar de otros plugins.
+        if (plugin.getConfig().getBoolean("tutorial.actionbar.enabled", true))
+            actionBarTask = Bukkit.getScheduler().runTaskTimer(plugin, this::sendActionBars, 1L, 1L);
     }
 
     public void shutdown() {
         if (stateTask != null) {
             stateTask.cancel();
             stateTask = null;
+        }
+        if (actionBarTask != null) {
+            actionBarTask.cancel();
+            actionBarTask = null;
         }
         for (BossBar bar : bossBars.values())
             bar.removeAll();
@@ -423,10 +433,7 @@ public final class TutorialService {
         if (plugin.getConfig().getBoolean("tutorial.bossbar.enabled", true)) {
             BossBar bar = bossBars.computeIfAbsent(player.getUniqueId(), uuid -> createBossBar());
             if (bar != null) {
-                String title = plugin.getConfig().getString(base + ".title", step.configKey());
-                String format = plugin.getConfig().getString("tutorial.bossbar.format",
-                        "&6&l✦ {objective} &7({step}/{total})");
-                bar.setTitle(ColorUtil.color(formatText(format, player, progress, title)));
+                bar.setTitle(objectiveBarMessage(player, progress));
                 int total = totalEnabledSteps();
                 bar.setProgress(total == 0 ? 1D
                         : Math.max(0D, Math.min(1D, displayStep(progress) / (double) total)));
@@ -441,6 +448,29 @@ public final class TutorialService {
         if (sendStartMessage) {
             sendLines(player, plugin.getConfig().getStringList(base + ".start-message"), progress);
         }
+    }
+
+    private void sendActionBars() {
+        if (active.isEmpty())
+            return;
+        for (var entry : active.entrySet()) {
+            TutorialProgress progress = entry.getValue();
+            if (progress.completed() || progress.currentStep() == null)
+                continue;
+            Player player = Bukkit.getPlayer(entry.getKey());
+            if (player == null || !player.isOnline())
+                continue;
+            player.sendActionBar(objectiveBarMessage(player, progress));
+        }
+    }
+
+    private String objectiveBarMessage(Player player, TutorialProgress progress) {
+        TutorialStep step = progress.currentStep();
+        String base = "tutorial.objectives." + step.configKey();
+        String title = plugin.getConfig().getString(base + ".title", step.configKey());
+        String format = plugin.getConfig().getString("tutorial.bossbar.format",
+                "&6&l✦ {objective} &7({step}/{total})");
+        return ColorUtil.color(formatText(format, player, progress, title));
     }
 
     private BossBar createBossBar() {
