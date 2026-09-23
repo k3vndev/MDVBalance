@@ -9,8 +9,7 @@ public record TutorialProgress(
         boolean completed,
         long startedAt,
         long objectiveStartedAt,
-        long updatedAt
-) {
+        long updatedAt) {
     public TutorialStep currentStep() {
         return completed ? null : TutorialStep.fromNumber(step);
     }

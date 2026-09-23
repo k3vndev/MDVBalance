@@ -1,0 +1,239 @@
+# ==========================================================
+# MDVBalance 1.1.0
+# Onboarding + balance de spawners + lista de servidores para MDVCRAFT
+# ==========================================================
+
+modules:
+  tutorial: true
+  spawners: true
+  server-list: true
+
+messages:
+  prefix: '&8[&6MDVBalance&8]&r '
+  no-permission: '&cNo tienes permiso.'
+  reloaded: '&aMDVBalance recargado correctamente.'
+  player-not-found: '&cNo se encontró a ese jugador conectado.'
+  console-only-signal: '&cEl comando tutorial signal solo puede ejecutarse desde consola.'
+  tutorial-started: '&aTutorial iniciado para &e{player}&a.'
+  tutorial-reset: '&aTutorial reiniciado para &e{player}&a.'
+  tutorial-skipped: '&eTutorial marcado como completado para &6{player}&e.'
+  tutorial-not-active: '&cEse jugador no tiene un tutorial activo.'
+  signal-accepted: '&aSeñal &e{signal} &aaceptada para &f{player}&a.'
+  signal-ignored: '&eSeñal ignorada: el jugador no está en el objetivo correspondiente.'
+
+
+# ==========================================================
+# LISTA DE SERVIDORES / MOTD
+# ==========================================================
+# Este módulo reemplaza a ServerListPlus para las funciones usadas por MDVCRAFT.
+# Trabaja directamente con el ping de Paper/Purpur; no necesita ProtocolLib.
+#
+# Cuando whitelist está OFF -> usa el perfil "normal".
+# Cuando whitelist está ON  -> usa el perfil "maintenance" automáticamente.
+#
+# Placeholders disponibles dentro de este módulo:
+#   {online} / {players}   jugadores online
+#   {max}                  máximo mostrado por el servidor
+#   {minecraft_version}    versión de Minecraft del servidor
+#   {whitelist}            true/false
+# ==========================================================
+
+server-list:
+  enabled: true
+
+  normal:
+    motd:
+      # true = NO reemplaza el MOTD normal y deja que server.properties lo controle.
+      # Esto permite seguir usando el MOTD Editor de PebbleHost si lo prefieres.
+      # false = usa las líneas configuradas aquí (recomendado para dejar todo en MDVBalance).
+      use-server-properties: false
+      lines:
+        - '&2         ≫≫ &e【&4⚒☠ &6&lMDVCRAFT &c[1.21.6+] &4☠⚒&e】 &2≪≪'
+        - '&e      Survival RPG &7• &aMobs &7• &bÍtems custom &7• &6Clanes'
+
+    # Texto mostrado al pasar el mouse sobre la cantidad de jugadores.
+    hover:
+      enabled: true
+      # true = reemplaza los nombres reales por estas líneas personalizadas.
+      # false = agrega estas líneas además de la muestra de jugadores que Paper ya tenga.
+      replace-player-list: true
+      lines:
+        - '&6&lMDVCRAFT &7• &fSurvival RPG'
+        - '&7Jugadores conectados: &e{online}&7/&e{max}'
+        - '&aMobs únicos &7• &bÍtems custom &7• &6Clanes'
+        - '&7Versión: &f{minecraft_version}+'
+
+    # Paper permite cambiar el texto de versión enviado en el ping.
+    # Se deja apagado porque Minecraft normalmente solo lo destaca cuando hay incompatibilidad.
+    version:
+      enabled: false
+      text: '&a{minecraft_version}+'
+
+  maintenance:
+    # Consulta la whitelist una vez por segundo en el hilo principal y cachea el estado.
+    # Así el ping (que puede ser asíncrono) no necesita consultar estado inseguro del servidor.
+    detect-whitelist: true
+    whitelist-check-interval-ticks: 20
+
+    motd:
+      use-server-properties: false
+      lines:
+        - '&4         ≫≫ &e【&c⚒☠ &6&lMDVCRAFT &c☠⚒&e】 &4≪≪'
+        - '&c        ⚠ &lSERVIDOR EN MANTENIMIENTO &r&c⚠'
+
+    hover:
+      enabled: true
+      replace-player-list: true
+      lines:
+        - '&c&l⚠ MDVCRAFT EN MANTENIMIENTO'
+        - '&7Estamos realizando mejoras en el servidor.'
+        - '&eVuelve a intentarlo en unos minutos.'
+        - '&7Whitelist: &f{whitelist}'
+
+    version:
+      enabled: false
+      text: '&cMANTENIMIENTO'
+
+# ==========================================================
+# TUTORIAL
+# ==========================================================
+
+tutorial:
+  enabled: true
+
+  # true = se inicia automáticamente únicamente en la primera entrada real del jugador.
+  # Los admins pueden iniciar/reiniciar el tutorial de cualquiera mediante comandos.
+  only-new-players: true
+
+  # Un único chequeo liviano para todos los jugadores con tutorial activo.
+  # 20 ticks = 1 segundo.
+  state-check-interval-ticks: 20
+
+  bossbar:
+    enabled: true
+    color: YELLOW
+    style: SOLID
+    format: '&6&l✦ {objective} &7({step}/{total})'
+
+  chat-filter:
+    enabled: true
+    bypass-permission: 'mdvbalance.tutorial.chat-bypass'
+
+  # Sonidos del tutorial.
+  # Usa IDs internos/namespaced de sonido, por ejemplo:
+  # minecraft:block.note_block.pling
+  # El sonido de objetivo se reproduce al completar los pasos 1-3.
+  # Al terminar el paso 4 se reproduce únicamente tutorial-complete,
+  # evitando que dos sonidos se superpongan.
+  sounds:
+    objective-complete:
+      enabled: true
+      sound: 'minecraft:block.note_block.pling'
+      volume: 1.0
+      pitch: 1.6
+
+    tutorial-complete:
+      enabled: true
+      sound: 'minecraft:ui.toast.challenge_complete'
+      volume: 1.0
+      pitch: 1.0
+
+  completion:
+    bossbar-seconds: 3
+    message:
+      - ''
+      - '&6&l✦ TUTORIAL COMPLETADO ✦'
+      - '&fYa estás preparado para comenzar tu aventura.'
+      - '&7¡Bienvenido a MDVCRAFT!'
+      - ''
+
+  objectives:
+    race:
+      title: 'Elige tu raza'
+      hide-player-chat: true
+      luckperms-group: 'aventurero'
+      permission-fallback: 'group.aventurero'
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fElige tu raza'
+        - '&7Abre el &6Libro del Aventurero &7y selecciona tu raza.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 30
+        message:
+          - '&e➤ Abre el Libro del Aventurero y elige una raza.'
+
+    supplies:
+      title: 'Reclama tus suministros'
+      hide-player-chat: true
+      signal: 'suministros'
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fReclama tus suministros'
+        - '&7Abre &6Suministros &7desde el menú y reclama tu kit inicial.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 30
+        message:
+          - '&e➤ Abre Suministros y reclama tu kit inicial.'
+
+    survival:
+      title: 'Viaja al Survival'
+      hide-player-chat: false
+      world: 'world'
+      allowed-sources:
+        - COMMAND
+        - SIGN
+        - PORTAL
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fViaja al Survival'
+        - '&7Usa el portal, un cartel de viaje o &e/rtp&7.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 45
+        message:
+          - '&e➤ Viaja al Survival mediante un viaje aleatorio.'
+
+    home:
+      title: 'Establece tu hogar'
+      hide-player-chat: false
+      minimum-homes: 1
+      essentials-userdata-path: 'plugins/Essentials/userdata'
+      start-message:
+        - ''
+        - '&6&lPRIMEROS PASOS &7• &eObjetivo {step}/{total}'
+        - '&fEstablece tu hogar'
+        - '&7Usa el sistema de Hogares de MDVSocial o &e/sethome&7.'
+        - ''
+      reminder:
+        enabled: true
+        interval-seconds: 45
+        message:
+          - '&e➤ Establece tu primer hogar para terminar el tutorial.'
+
+# ==========================================================
+# SPAWNERS VANILLA
+# ==========================================================
+
+spawners:
+  enabled: true
+
+  # Máximo de entidades vivas originadas por UN MISMO spawner.
+  # Sigue contando aunque los mobs se alejen a otros chunks mientras existan.
+  max-alive-per-spawner: 3
+
+  # Solo afecta CreatureSpawner (spawner vanilla de bloque).
+  # Minecart spawners y Trial Spawners quedan fuera.
+  only-living-entities: true
+
+  # Marca cada entidad con PDC para reconstruir el tracker cuando su chunk carga.
+  persistent-origin-tag: true
+
+  debug: false
