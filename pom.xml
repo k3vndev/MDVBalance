@@ -6,7 +6,7 @@
 
     <groupId>xyz.mdvcraft</groupId>
     <artifactId>MDVBalance</artifactId>
-    <version>1.1.2</version>
+    <version>1.1.3</version>
     <packaging>jar</packaging>
 
     <name>MDVBalance</name>
@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <paper.version>1.21.6-R0.1-SNAPSHOT</paper.version>
         <luckperms.api.version>5.4</luckperms.api.version>
+        <worldguard.version>7.0.17</worldguard.version>
         <sqlite.version>3.46.1.0</sqlite.version>
     </properties>
 
@@ -24,6 +25,10 @@
         <repository>
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>enginehub</id>
+            <url>https://maven.enginehub.org/repo/</url>
         </repository>
     </repositories>
 
@@ -38,6 +43,12 @@
             <groupId>net.luckperms</groupId>
             <artifactId>api</artifactId>
             <version>${luckperms.api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>${worldguard.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

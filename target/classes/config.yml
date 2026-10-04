@@ -8,6 +8,17 @@ modules:
   spawners: true
   server-list: true
 
+# Bloquea la interacción con estos bloques cuando estén dentro de una región de WorldGuard.
+lobby-trapdoors:
+  regions:
+    - lobby
+  blocks:
+    # Nombres exactos de materiales Bukkit, por ejemplo: OAK_TRAPDOOR
+    exact: []
+    # Coincide con nombres de material que terminen con el sufijo, por ejemplo: _TRAPDOOR
+    suffixes:
+      - _TRAPDOOR
+
 messages:
   prefix: '&8[&6MDVBalance&8]&r '
   no-permission: '&cNo tienes permiso.'
@@ -267,4 +278,3 @@ death-listener:
      
     &6Usa la &5Fruta de la Muerte &6para teletransportarte a la bolsa con tus ítems.
     &6Recuerda que puedes usar el &aLibro del Aventurero &6para establecer tu hogar y regresar a él fácilmente.
-

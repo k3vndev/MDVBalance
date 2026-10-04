@@ -15,3 +15,4 @@ xyz\mdvcraft\mdvbalance\tutorial\TutorialListener.class
 xyz\mdvcraft\mdvbalance\command\MDVBalanceCommand.class
 xyz\mdvcraft\mdvbalance\tutorial\TutorialService$1.class
 xyz\mdvcraft\mdvbalance\tutorial\TutorialStep.class
+xyz\mdvcraft\mdvbalance\listener\LobbyTrapdoorListener.class

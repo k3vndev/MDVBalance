@@ -5,6 +5,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.mdvcraft.mdvbalance.command.MDVBalanceCommand;
 import xyz.mdvcraft.mdvbalance.listener.DeathListener;
+import xyz.mdvcraft.mdvbalance.listener.LobbyTrapdoorListener;
 import xyz.mdvcraft.mdvbalance.spawner.SpawnerLimiter;
 import xyz.mdvcraft.mdvbalance.serverlist.ServerListService;
 import xyz.mdvcraft.mdvbalance.tutorial.TutorialListener;
@@ -19,6 +20,7 @@ public final class MDVBalance extends JavaPlugin {
     private TutorialService tutorialService;
     private SpawnerLimiter spawnerLimiter;
     private ServerListService serverListService;
+    private LobbyTrapdoorListener lobbyTrapdoorListener;
 
     @Override
     public void onEnable() {
@@ -44,6 +46,12 @@ public final class MDVBalance extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new TutorialListener(this, tutorialService), this);
         getServer().getPluginManager().registerEvents(spawnerLimiter, this);
         getServer().getPluginManager().registerEvents(new DeathListener(this), this);
+        if (getServer().getPluginManager().isPluginEnabled("WorldGuard")) {
+            lobbyTrapdoorListener = new LobbyTrapdoorListener(this);
+            getServer().getPluginManager().registerEvents(lobbyTrapdoorListener, this);
+        } else {
+            getLogger().warning("WorldGuard no está habilitado; la protección de trapdoors del lobby no estará activa.");
+        }
 
         MDVBalanceCommand command = new MDVBalanceCommand(this);
         PluginCommand pluginCommand = getCommand("mdvbalance");
@@ -80,6 +88,8 @@ public final class MDVBalance extends JavaPlugin {
             spawnerLimiter.reload();
         if (serverListService != null)
             serverListService.reload();
+        if (lobbyTrapdoorListener != null)
+            lobbyTrapdoorListener.reload();
     }
 
     public void message(CommandSender sender, String key, String... replacements) {
