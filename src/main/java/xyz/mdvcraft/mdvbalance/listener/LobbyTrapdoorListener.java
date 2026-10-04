@@ -35,7 +35,7 @@ public class LobbyTrapdoorListener implements Listener {
   @EventHandler
   public void onPlayerInteract(PlayerInteractEvent event) {
     Action action = event.getAction();
-    if (action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK)
+    if ((action != Action.LEFT_CLICK_BLOCK && action != Action.RIGHT_CLICK_BLOCK) || event.getPlayer().isOp())
       return;
 
     Block block = event.getClickedBlock();
